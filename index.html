@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>I'm Sorry — Pick a Day, Pick a Place</title>
+<meta name="description" content="A little apology, and an invitation.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --plum-dark:#33101f;
+    --plum-deep:#210a15;
+    --wine:#7c2c43;
+    --wine-soft:#9c4258;
+    --blush:#f3c9ce;
+    --ivory:#fbf3ea;
+    --ivory-soft:#f6e9de;
+    --gold:#c9974b;
+    --gold-soft:#e3c281;
+    --ink:#2c1018;
+    --ink-soft:#5a3444;
+    --shadow: 0 20px 60px -25px rgba(33,10,21,0.6);
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    font-family:'Jost',sans-serif;
+    color:var(--ink);
+    background:var(--ivory);
+    overflow-x:hidden;
+    font-weight:300;
+  }
+  h1,h2,h3,.display{
+    font-family:'Cormorant Garamond',serif;
+    font-weight:600;
+    margin:0;
+  }
+  .eyebrow{
+    font-family:'Jost',sans-serif;
+    letter-spacing:.28em;
+    text-transform:uppercase;
+    font-size:.68rem;
+    font-weight:500;
+    color:var(--gold);
+  }
+  section{
+    position:relative;
+    padding:6rem 1.5rem;
+    max-width:1000px;
+    margin:0 auto;
+  }
+  .center{ text-align:center; }
+
+  /* ---------- ambient hearts ---------- */
+  #heart-field{
+    position:fixed; inset:0; pointer-events:none; z-index:1; overflow:hidden;
+  }
+  .drift-heart{
+    position:absolute;
+    top:-40px;
+    opacity:.55;
+    animation-name:fall;
+    animation-timing-function:linear;
+    animation-iteration-count:1;
+    will-change:transform;
+  }
+  .drift-heart svg{ width:100%; height:100%; display:block; }
+  @keyframes fall{
+    to{ transform:translateY(115vh) translateX(var(--drift,20px)) rotate(20deg); }
+  }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    min-height:100svh;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    background:
+      radial-gradient(circle at 30% 20%, rgba(201,151,75,.18), transparent 45%),
+      radial-gradient(circle at 75% 80%, rgba(243,201,206,.15), transparent 50%),
+      linear-gradient(160deg, var(--plum-deep), var(--plum-dark) 45%, var(--wine) 130%);
+    color:var(--ivory);
+    text-align:center;
+    padding:2rem;
+    position:relative;
+    z-index:2;
+  }
+  .hero .eyebrow{ color:var(--gold-soft); margin-bottom:1.4rem; }
+  .hero h1{
+    font-size:clamp(2.2rem, 6vw, 3.6rem);
+    font-style:italic;
+    color:var(--ivory);
+    max-width:15ch;
+    line-height:1.15;
+  }
+  .hero p{
+    max-width:38ch;
+    margin:1.4rem auto 0;
+    color:var(--blush);
+    font-size:1.05rem;
+    line-height:1.7;
+  }
+
+  .envelope-wrap{
+    margin-top:3rem;
+    cursor:pointer;
+    background:none;
+    border:none;
+    padding:0;
+    font-family:'Jost',sans-serif;
+  }
+  .envelope{
+    width:150px; height:104px;
+    position:relative;
+    filter:drop-shadow(0 18px 30px rgba(0,0,0,.35));
+    transition:transform .35s ease;
+  }
+  .envelope-wrap:hover .envelope{ transform:translateY(-4px); }
+  .envelope-body{
+    position:absolute; inset:0;
+    background:var(--ivory);
+    border-radius:6px;
+  }
+  .envelope-flap{
+    position:absolute; top:0; left:0; width:0; height:0;
+    border-left:75px solid transparent;
+    border-right:75px solid transparent;
+    border-top:58px solid var(--wine-soft);
+    transform-origin:top center;
+    transition:transform .6s cubic-bezier(.6,-0.2,.3,1.3);
+    z-index:2;
+  }
+  .envelope-seal{
+    position:absolute; top:34px; left:50%; transform:translateX(-50%);
+    width:30px; height:30px; border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, var(--gold-soft), var(--gold) 70%);
+    display:flex; align-items:center; justify-content:center;
+    font-size:.7rem; color:var(--plum-deep); z-index:3;
+    box-shadow:0 3px 8px rgba(0,0,0,.3);
+    transition:opacity .3s ease;
+  }
+  .envelope-wrap[data-open="true"] .envelope-flap{
+    transform:rotateX(150deg);
+  }
+  .envelope-wrap[data-open="true"] .envelope-seal{ opacity:0; }
+  .envelope-tap{
+    margin-top:1rem;
+    font-size:.7rem;
+    letter-spacing:.2em;
+    text-transform:uppercase;
+    color:var(--gold-soft);
+  }
+
+  .scroll-cue{
+    margin-top:3.2rem;
+    width:1px; height:46px;
+    background:linear-gradient(var(--gold-soft), transparent);
+    position:relative;
+  }
+
+  /* ---------- LETTER ---------- */
+  .letter-section{ background:var(--ivory); }
+  .letter-card{
+    background:var(--ivory-soft);
+    border-radius:2px;
+    padding:clamp(2rem,6vw,4rem);
+    box-shadow:var(--shadow);
+    position:relative;
+    max-width:680px;
+    margin:0 auto;
+    border:1px solid rgba(124,44,67,.12);
+  }
+  .letter-card::before{
+    content:"";
+    position:absolute; top:14px; left:14px; right:14px; bottom:14px;
+    border:1px solid rgba(201,151,75,.35);
+    pointer-events:none;
+  }
+  .letter-card p{
+    font-size:1.08rem;
+    line-height:1.85;
+    color:var(--ink-soft);
+    margin:0 0 1.3rem;
+  }
+  .letter-card p:last-of-type{ margin-bottom:0; }
+  .signoff{
+    margin-top:2rem !important;
+    font-family:'Cormorant Garamond',serif;
+    font-style:italic;
+    font-size:1.4rem;
+    color:var(--wine);
+  }
+  .reveal-text{ font-family:'Cormorant Garamond',serif; font-style:italic; font-size:1.5rem; color:var(--wine); text-align:center; margin-bottom:2rem; display:block;}
+
+  /* ---------- reveal on scroll ---------- */
+  .reveal{
+    opacity:0; transform:translateY(28px);
+    transition:opacity .8s ease, transform .8s ease;
+  }
+  .reveal.in{ opacity:1; transform:none; }
+
+  /* ---------- section heading ---------- */
+  .section-head{ text-align:center; margin-bottom:3rem; }
+  .section-head h2{
+    font-size:clamp(1.8rem,4vw,2.6rem);
+    font-style:italic;
+    color:var(--wine);
+    margin-top:.6rem;
+  }
+  .section-head p{
+    color:var(--ink-soft);
+    margin-top:.7rem;
+    font-size:1rem;
+  }
+
+  /* ---------- DATE CARDS ---------- */
+  .date-section{ background:var(--ivory-soft); }
+  .choice-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:1.6rem;
+  }
+  .ticket{
+    position:relative;
+    background:var(--ivory);
+    border:1.5px dashed rgba(124,44,67,.35);
+    border-radius:14px;
+    padding:2.2rem 1.5rem;
+    text-align:center;
+    cursor:pointer;
+    transition:transform .3s ease, box-shadow .3s ease, border-color .3s ease;
+    font-family:'Jost',sans-serif;
+  }
+  .ticket::before, .ticket::after{
+    content:"";
+    position:absolute;
+    width:22px; height:22px;
+    background:var(--ivory-soft);
+    border-radius:50%;
+    top:50%; transform:translateY(-50%);
+  }
+  .ticket::before{ left:-11px; }
+  .ticket::after{ right:-11px; }
+  .ticket:hover{ transform:translateY(-6px); box-shadow:var(--shadow); }
+  .ticket .day-name{
+    font-size:.72rem; letter-spacing:.22em; text-transform:uppercase; color:var(--gold);
+  }
+  .ticket .day-num{
+    font-family:'Cormorant Garamond',serif;
+    font-size:3.2rem; font-weight:600; color:var(--wine); line-height:1; margin:.5rem 0;
+  }
+  .ticket .day-month{
+    font-size:1rem; color:var(--ink-soft); letter-spacing:.05em;
+  }
+  .ticket.selected{
+    border-color:var(--gold);
+    border-style:solid;
+    background:linear-gradient(160deg, var(--ivory), var(--blush) 180%);
+    box-shadow:var(--shadow);
+  }
+  .ticket.selected::after{ content:"chosen"; position:static; width:auto;height:auto; background:none; display:block; margin-top:.6rem; font-size:.7rem; letter-spacing:.18em; text-transform:uppercase; color:var(--wine); }
+  .ticket.selected::before{ left:-11px; }
+  .ticket.selected::after{ right:auto; }
+
+  /* fix double-content of ::after on selected: rebuild via span instead */
+  .ticket .chosen-tag{ display:none; margin-top:.6rem; font-size:.7rem; letter-spacing:.18em; text-transform:uppercase; color:var(--wine); font-weight:500;}
+  .ticket.selected .chosen-tag{ display:block; }
+  .ticket.selected::after{ content:""; }
+
+  /* ---------- PLACE CARDS ---------- */
+  .place-section{ background:var(--ivory); }
+  .postcard{
+    position:relative;
+    background:var(--ivory-soft);
+    border-radius:16px;
+    padding:2.2rem 1.6rem;
+    cursor:pointer;
+    text-align:center;
+    border:1.5px solid rgba(124,44,67,.15);
+    transition:transform .3s ease, box-shadow .3s ease, border-color .3s ease, background .3s ease;
+  }
+  .postcard:hover{ transform:translateY(-6px); box-shadow:var(--shadow); }
+  .pin{
+    width:44px; height:44px; margin:0 auto 1rem;
+    border-radius:50% 50% 50% 0;
+    background:linear-gradient(160deg, var(--wine-soft), var(--wine));
+    transform:rotate(-45deg);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .pin span{ transform:rotate(45deg); color:var(--ivory); font-size:1.1rem; }
+  .postcard h3{
+    font-family:'Cormorant Garamond',serif; font-style:italic; font-size:1.5rem; color:var(--wine); font-weight:600;
+  }
+  .postcard p{ color:var(--ink-soft); font-size:.9rem; margin-top:.5rem; }
+  .postcard.selected{
+    border-color:var(--gold);
+    background:linear-gradient(160deg, var(--ivory), var(--blush) 200%);
+    box-shadow:var(--shadow);
+  }
+  .postcard .chosen-tag{ display:none; margin-top:.8rem; font-size:.68rem; letter-spacing:.18em; text-transform:uppercase; color:var(--wine); font-weight:500;}
+  .postcard.selected .chosen-tag{ display:block; }
+
+  /* ---------- DEAL SECTION ---------- */
+  .deal-section{
+    background:linear-gradient(180deg, var(--ivory-soft), var(--blush) 140%);
+    text-align:center;
+  }
+  .summary-line{
+    font-family:'Cormorant Garamond',serif; font-style:italic; font-size:1.3rem; color:var(--wine); min-height:2.2rem; margin-bottom:2.2rem;
+  }
+  .seal-btn{
+    width:150px; height:150px;
+    border-radius:50%;
+    border:none;
+    background:radial-gradient(circle at 35% 30%, var(--gold-soft), var(--gold) 65%, #a97a34 100%);
+    color:var(--plum-deep);
+    font-family:'Cormorant Garamond',serif;
+    font-style:italic;
+    font-weight:600;
+    font-size:1.7rem;
+    cursor:pointer;
+    box-shadow:0 18px 40px -12px rgba(124,44,67,.45), inset 0 -6px 10px rgba(0,0,0,.15);
+    transition:transform .25s ease, box-shadow .25s ease, opacity .3s ease;
+    position:relative;
+  }
+  .seal-btn::before{
+    content:"";
+    position:absolute; inset:8px;
+    border-radius:50%;
+    border:1.5px dashed rgba(43,16,24,.3);
+  }
+  .seal-btn:disabled{ opacity:.4; cursor:not-allowed; }
+  .seal-btn:not(:disabled):hover{ transform:scale(1.05); }
+  .seal-btn.stamping{ animation:stamp .5s ease; }
+  @keyframes stamp{
+    0%{ transform:scale(1); }
+    35%{ transform:scale(.82); }
+    60%{ transform:scale(1.12); }
+    100%{ transform:scale(1); }
+  }
+  .hint{ margin-top:1.3rem; font-size:.85rem; color:var(--ink-soft); }
+
+  /* ---------- FINAL REVEAL ---------- */
+  .final-wrap{
+    display:none;
+    margin-top:3.5rem;
+    justify-content:center;
+  }
+  .final-wrap.show{ display:flex; }
+  .polaroid{
+    background:var(--ivory);
+    padding:1rem 1rem 2.2rem;
+    box-shadow:var(--shadow);
+    max-width:340px;
+    transform:rotate(-2deg) scale(.9);
+    opacity:0;
+    transition:transform .7s cubic-bezier(.2,.8,.2,1), opacity .7s ease;
+    border-radius:2px;
+  }
+  .polaroid.show{ transform:rotate(-2deg) scale(1); opacity:1; }
+  .polaroid img{
+    width:100%; display:block; border-radius:1px;
+    filter:saturate(1.05) contrast(1.02);
+  }
+  .polaroid figcaption{
+    font-family:'Cormorant Garamond',serif; font-style:italic; color:var(--wine); text-align:center; margin-top:1rem; font-size:1.15rem;
+  }
+  .polaroid .details{
+    font-family:'Jost',sans-serif; font-style:normal; font-size:.82rem; color:var(--ink-soft); text-align:center; margin-top:.4rem; letter-spacing:.03em;
+  }
+
+  .note-box{
+    max-width:480px;
+    margin:2.4rem auto 0;
+    background:var(--ivory-soft);
+    border:1px solid rgba(124,44,67,.18);
+    border-radius:12px;
+    padding:1.4rem 1.6rem;
+    text-align:left;
+  }
+  .note-box p{
+    font-family:'Cormorant Garamond',serif; font-style:italic; font-size:1.15rem; color:var(--ink); line-height:1.6; margin:0 0 1rem;
+  }
+  .copy-btn{
+    font-family:'Jost',sans-serif;
+    font-size:.78rem;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    background:none;
+    border:1px solid var(--wine);
+    color:var(--wine);
+    padding:.6rem 1.1rem;
+    border-radius:30px;
+    cursor:pointer;
+    transition:background .25s ease, color .25s ease;
+  }
+  .copy-btn:hover{ background:var(--wine); color:var(--ivory); }
+
+  footer{
+    text-align:center;
+    padding:2.5rem 1.5rem 3rem;
+    color:var(--ink-soft);
+    font-size:.78rem;
+    letter-spacing:.05em;
+    background:var(--ivory);
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+    .drift-heart, .reveal, .polaroid, .seal-btn, .envelope-flap{ animation:none !important; transition:none !important; }
+    .reveal{ opacity:1; transform:none; }
+  }
+</style>
+</head>
+<body>
+
+<div id="heart-field" aria-hidden="true"></div>
+
+<!-- HERO -->
+<section class="hero">
+  <span class="eyebrow">a small apology</span>
+  <h1>I know I messed up.<br>Let me make it right?</h1>
+  <p>No excuses — just me, asking for one evening to say sorry properly. Open the letter.</p>
+
+  <button class="envelope-wrap" id="envelopeBtn" data-open="false" aria-label="Open the letter">
+    <span class="envelope">
+      <span class="envelope-body"></span>
+      <span class="envelope-seal">♥</span>
+      <span class="envelope-flap"></span>
+    </span>
+    <span class="envelope-tap">tap to open</span>
+  </button>
+
+  <div class="scroll-cue"></div>
+</section>
+
+<!-- LETTER -->
+<section class="letter-section" id="letter">
+  <div class="letter-card reveal">
+    <span class="reveal-text">To you, from someone who's sorry</span>
+    <p>I've been sitting with this for a while, and the short version is: I was wrong, and you had every right to be upset. I'm not writing this to explain myself — I'm writing it because you deserve better than silence.</p>
+    <p>I don't want one more day to pass with you thinking I don't care, because I do — more than I probably show. So instead of another text you can ignore, here's something you can actually click through.</p>
+    <p>Pick a day. Pick a place. I'll be there first, waiting, no phone, no excuses — just an apology I actually mean, said to your face.</p>
+    <p class="signoff">— still yours, if you'll let me be</p>
+  </div>
+</section>
+
+<!-- DATE PICK -->
+<section class="date-section" id="date-pick">
+  <div class="section-head reveal">
+    <span class="eyebrow">step one</span>
+    <h2>When can I see you?</h2>
+    <p>Two evenings I've kept free. You choose.</p>
+  </div>
+  <div class="choice-grid reveal" id="dateGrid">
+    <div class="ticket" data-date="29 July 2026" data-day="Wednesday" tabindex="0" role="button" aria-pressed="false">
+      <span class="day-name">Wednesday</span>
+      <span class="day-num">29</span>
+      <span class="day-month">July 2026</span>
+      <span class="chosen-tag">chosen</span>
+    </div>
+    <div class="ticket" data-date="30 July 2026" data-day="Thursday" tabindex="0" role="button" aria-pressed="false">
+      <span class="day-name">Thursday</span>
+      <span class="day-num">30</span>
+      <span class="day-month">July 2026</span>
+      <span class="chosen-tag">chosen</span>
+    </div>
+  </div>
+</section>
+
+<!-- PLACE PICK -->
+<section class="place-section" id="place-pick">
+  <div class="section-head reveal">
+    <span class="eyebrow">step two</span>
+    <h2>Where should we meet?</h2>
+    <p>Wherever feels right to you.</p>
+  </div>
+  <div class="choice-grid reveal" id="placeGrid">
+    <div class="postcard" data-place="FS Square Food Court" tabindex="0" role="button" aria-pressed="false">
+      <span class="pin"><span>★</span></span>
+      <h3>FS Square<br>Food Court</h3>
+      <p>Easy, familiar, good food.</p>
+      <span class="chosen-tag">chosen</span>
+    </div>
+    <div class="postcard" data-place="Khanas" tabindex="0" role="button" aria-pressed="false">
+      <span class="pin"><span>★</span></span>
+      <h3>Khanas</h3>
+      <p>Quieter corner, more time to talk.</p>
+      <span class="chosen-tag">chosen</span>
+    </div>
+    <div class="postcard" data-place="Signature Food Court" tabindex="0" role="button" aria-pressed="false">
+      <span class="pin"><span>★</span></span>
+      <h3>Signature<br>Food Court</h3>
+      <p>Your call — I'll follow.</p>
+      <span class="chosen-tag">chosen</span>
+    </div>
+  </div>
+</section>
+
+<!-- DEAL -->
+<section class="deal-section" id="deal">
+  <div class="section-head reveal">
+    <span class="eyebrow">step three</span>
+    <h2>Deal?</h2>
+  </div>
+  <div class="summary-line reveal" id="summaryLine">Pick a day and a place above first.</div>
+  <button class="seal-btn reveal" id="dealBtn" disabled aria-label="Seal the deal">Deal?</button>
+  <p class="hint reveal">Press the seal once you've chosen both.</p>
+
+  <div class="final-wrap" id="finalWrap">
+    <figure class="polaroid" id="polaroid">
+      <img src="assets/promise.jpg" alt="Pinky promise between two hands">
+      <figcaption>pinky promise, sealed 🤍</figcaption>
+      <div class="details" id="finalDetails"></div>
+    </figure>
+  </div>
+
+  <div class="note-box" id="noteBox" style="display:none;">
+    <p id="noteText"></p>
+    <button class="copy-btn" id="copyBtn">Copy this message</button>
+  </div>
+</section>
+
+<footer>made with a little regret, and a lot of love — July 2026</footer>
+
+<script>
+(function(){
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- ambient hearts ---------- */
+  function heartSVG(){
+    return '<svg viewBox="0 0 32 29" xmlns="http://www.w3.org/2000/svg"><path d="M16 29S0 18.5 0 8.8C0 3.9 3.9 0 8.7 0 12 0 14.7 1.8 16 4.4 17.3 1.8 20 0 23.3 0 28.1 0 32 3.9 32 8.8 32 18.5 16 29 16 29Z" fill="' + arguments[0] + '"/></svg>';
+  }
+  if(!reduceMotion){
+    var field = document.getElementById('heart-field');
+    var colors = ['#c9974b','#f3c9ce','#7c2c43'];
+    function spawnHeart(){
+      var h = document.createElement('div');
+      h.className = 'drift-heart';
+      var size = 10 + Math.random()*16;
+      h.style.width = size+'px';
+      h.style.height = size+'px';
+      h.style.left = (Math.random()*100)+'vw';
+      var duration = 14 + Math.random()*10;
+      h.style.animationDuration = duration+'s';
+      h.style.setProperty('--drift', (Math.random()*80-40)+'px');
+      h.innerHTML = heartSVG(colors[Math.floor(Math.random()*colors.length)]);
+      field.appendChild(h);
+      setTimeout(function(){ h.remove(); }, duration*1000+500);
+    }
+    for(var i=0;i<6;i++){ setTimeout(spawnHeart, i*900); }
+    setInterval(spawnHeart, 2200);
+  }
+
+  /* ---------- envelope open ---------- */
+  var envBtn = document.getElementById('envelopeBtn');
+  envBtn.addEventListener('click', function(){
+    var isOpen = envBtn.getAttribute('data-open') === 'true';
+    envBtn.setAttribute('data-open', String(!isOpen));
+    if(!isOpen){
+      setTimeout(function(){
+        document.getElementById('letter').scrollIntoView({behavior: reduceMotion ? 'auto' : 'smooth'});
+      }, 500);
+    }
+  });
+
+  /* ---------- scroll reveal ---------- */
+  var revealEls = document.querySelectorAll('.reveal');
+  if('IntersectionObserver' in window && !reduceMotion){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){
+          entry.target.classList.add('in');
+          io.unobserve(entry.target);
+        }
+      });
+    }, {threshold:.2});
+    revealEls.forEach(function(el){ io.observe(el); });
+  } else {
+    revealEls.forEach(function(el){ el.classList.add('in'); });
+  }
+
+  /* ---------- selection state ---------- */
+  var state = { date:null, day:null, place:null };
+  var dealBtn = document.getElementById('dealBtn');
+  var summaryLine = document.getElementById('summaryLine');
+
+  function selectCard(group, el, key, valueAttr){
+    group.forEach(function(c){
+      c.classList.remove('selected');
+      c.setAttribute('aria-pressed','false');
+    });
+    el.classList.add('selected');
+    el.setAttribute('aria-pressed','true');
+    state[key] = el.getAttribute(valueAttr);
+    if(key === 'date'){ state.day = el.getAttribute('data-day'); }
+    updateSummary();
+  }
+
+  function updateSummary(){
+    if(state.date && state.place){
+      summaryLine.textContent = state.day + ', ' + state.date + ' — ' + state.place + '. Just say the word.';
+      dealBtn.disabled = false;
+    } else if(state.date){
+      summaryLine.textContent = state.date + ' works. Now pick a place.';
+      dealBtn.disabled = true;
+    } else if(state.place){
+      summaryLine.textContent = state.place + ' it is. Now pick a day.';
+      dealBtn.disabled = true;
+    } else {
+      summaryLine.textContent = 'Pick a day and a place above first.';
+      dealBtn.disabled = true;
+    }
+  }
+
+  var tickets = Array.prototype.slice.call(document.querySelectorAll('.ticket'));
+  tickets.forEach(function(t){
+    t.addEventListener('click', function(){ selectCard(tickets, t, 'date', 'data-date'); });
+    t.addEventListener('keydown', function(e){
+      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); selectCard(tickets, t, 'date', 'data-date'); }
+    });
+  });
+
+  var postcards = Array.prototype.slice.call(document.querySelectorAll('.postcard'));
+  postcards.forEach(function(p){
+    p.addEventListener('click', function(){ selectCard(postcards, p, 'place', 'data-place'); });
+    p.addEventListener('keydown', function(e){
+      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); selectCard(postcards, p, 'place', 'data-place'); }
+    });
+  });
+
+  /* ---------- deal / reveal ---------- */
+  var finalWrap = document.getElementById('finalWrap');
+  var polaroid = document.getElementById('polaroid');
+  var finalDetails = document.getElementById('finalDetails');
+  var noteBox = document.getElementById('noteBox');
+  var noteText = document.getElementById('noteText');
+  var copyBtn = document.getElementById('copyBtn');
+
+  dealBtn.addEventListener('click', function(){
+    if(dealBtn.disabled) return;
+    dealBtn.classList.add('stamping');
+    setTimeout(function(){ dealBtn.classList.remove('stamping'); }, 550);
+    dealBtn.textContent = 'Sealed ♥';
+
+    finalDetails.textContent = state.day + ', ' + state.date + ' · ' + state.place;
+    finalWrap.classList.add('show');
+    setTimeout(function(){ polaroid.classList.add('show'); }, 120);
+
+    noteText.textContent = '"I\'m sorry about everything. Let\'s meet ' + state.day + ', ' + state.date + ' at ' + state.place + '. Deal? 🤍"';
+    noteBox.style.display = 'block';
+
+    setTimeout(function(){
+      finalWrap.scrollIntoView({behavior: reduceMotion ? 'auto' : 'smooth', block:'center'});
+    }, 300);
+  });
+
+  copyBtn.addEventListener('click', function(){
+    var msg = '' + state.day + ', ' + state.date + ' at ' + state.place + '. Deal? 🤍';
+    if(navigator.clipboard){
+      navigator.clipboard.writeText(msg).then(function(){
+        copyBtn.textContent = 'Copied ✓';
+        setTimeout(function(){ copyBtn.textContent = 'Copy this message'; }, 1800);
+      });
+    }
+  });
+})();
+</script>
+</body>
+</html>
