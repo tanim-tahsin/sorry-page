@@ -400,41 +400,106 @@ body.ended #app{ pointer-events:none; }
 }
 
 /* ---------- final end photo ---------- */
-#finalScreen{ padding:0; }
-.end-photo-wrap{ position:fixed; inset:0; overflow:hidden; }
+/* ---------- FINAL END ---------- */
+
+#finalScreen{
+    padding:0;
+    position:fixed;
+    inset:0;
+    overflow:hidden;
+    background:#a63a4d;
+}
+
+.end-photo-wrap{
+    position:absolute;
+    inset:0;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    overflow:hidden;
+}
+
 .end-photo{
-  width:100%; height:100%; object-fit:cover;
-  animation:kenburns 12s ease-in-out infinite alternate;
+    width:100%;
+    height:100%;
+    object-fit:contain;
 }
-@keyframes kenburns{
-  from{ transform:scale(1) translate(0,0); }
-  to{ transform:scale(1.12) translate(-2%,-2%); }
+
+/* play only when screen becomes active */
+#finalScreen.active .end-photo{
+    animation:finalScene 2.8s forwards;
 }
+
+@keyframes finalScene{
+
+0%{
+opacity:0;
+transform:scale(.85);
+filter:blur(8px);
+}
+
+20%{
+opacity:1;
+transform:scale(1);
+filter:blur(0);
+}
+
+55%{
+opacity:1;
+}
+
+100%{
+opacity:0;
+transform:scale(1.15);
+filter:blur(18px);
+}
+
+}
+
+/* DON'T animate all the time */
 .end-photo-wrap::after{
-  content:'';
-  position:absolute; inset:0;
-  background:radial-gradient(ellipse at center, rgba(36,26,38,0) 45%, rgba(36,26,38,.55) 100%);
-  pointer-events:none;
+
+content:"I love you Sadia ❤️";
+
+position:absolute;
+inset:0;
+
+display:flex;
+justify-content:center;
+align-items:center;
+
+background:#a63a4d;
+
+font-family:'Caveat',cursive;
+font-size:clamp(3rem,7vw,5rem);
+color:#fff;
+
+opacity:0;
+
 }
 
-/* burst layer for hearts on deal */
-.burst-layer{ position:fixed; inset:0; pointer-events:none; z-index:50; overflow:hidden; }
-.burst-heart{
-  position:absolute; bottom:10%;
-  font-size:22px; opacity:0;
-  animation:burstUp 1.6s ease-out forwards;
-}
-@keyframes burstUp{
-  0%{ opacity:0; transform:translateY(0) scale(.4) rotate(0deg); }
-  15%{ opacity:1; }
-  100%{ opacity:0; transform:translateY(-70vh) translateX(var(--bx,0)) scale(1.1) rotate(var(--br,20deg)); }
+/* animate ONLY on final page */
+#finalScreen.active .end-photo-wrap::after{
+
+animation:showText 3.2s forwards;
+animation-delay:2.8s;
+
 }
 
-@media (max-width:480px){
-  .card-body, .invite-card, .choice-card, .reveal-card{ padding:26px 20px 28px; }
-  .choice-grid{ gap:10px; }
+@keyframes showText{
+
+0%{
+opacity:0;
+transform:scale(.8);
 }
 
-@media (prefers-reduced-motion: reduce){
-  *{ animation-duration:.01ms !important; transition-duration:.01ms !important; }
+60%{
+opacity:0;
+}
+
+100%{
+opacity:1;
+transform:scale(1);
+}
+
 }
