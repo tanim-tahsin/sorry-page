@@ -15,8 +15,18 @@
       startLetterFly();
     }
     if(step === 7){
-      document.body.classList.add('ended');
+
+    document.body.classList.add('ended');
+
+    const photo = document.querySelector('.end-photo');
+
+    if(photo){
+        photo.style.animation = 'none';
+        photo.offsetHeight;      // force reflow
+        photo.style.animation = 'finalScene 2.8s forwards';
     }
+
+}
   }
 
   // envelope open
